@@ -1,5 +1,6 @@
 package com.pashusetu.pashusetu.controller;
 
+import com.pashusetu.pashusetu.dto.DairyAnimalUpdateRequest;
 import com.pashusetu.pashusetu.dto.DairyAnimalRequest;
 import com.pashusetu.pashusetu.entity.DairyAnimal;
 import com.pashusetu.pashusetu.service.DairyAnimalService;
@@ -62,10 +63,10 @@ public class DairyAnimalController {
     @PutMapping("/{id}")
     public ResponseEntity<DairyAnimal> updateAnimal(
             @PathVariable Long id,
-            @RequestBody DairyAnimal animal) {
+            @Valid @RequestBody DairyAnimalUpdateRequest request) {
 
         return ResponseEntity.ok(
-                dairyAnimalService.updateAnimal(id, animal)
+                dairyAnimalService.updateAnimal(id, request)
         );
     }
 

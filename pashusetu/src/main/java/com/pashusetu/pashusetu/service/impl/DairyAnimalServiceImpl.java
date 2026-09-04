@@ -1,4 +1,5 @@
 package com.pashusetu.pashusetu.service.impl;
+import com.pashusetu.pashusetu.dto.DairyAnimalUpdateRequest;
 import com.pashusetu.pashusetu.dto.DairyAnimalRequest;
 import com.pashusetu.pashusetu.entity.Breed;
 import com.pashusetu.pashusetu.entity.Farmer;
@@ -115,50 +116,53 @@ public class DairyAnimalServiceImpl implements DairyAnimalService {
     @Override
     public DairyAnimal updateAnimal(
             Long id,
-            DairyAnimal animal) {
+            DairyAnimalUpdateRequest request) {
 
-        DairyAnimal existingAnimal =
-                getAnimalById(id);
+        // 1. Find existing animal
+        DairyAnimal existingAnimal = getAnimalById(id);
 
-        existingAnimal.setTagNumber(
-                animal.getTagNumber()
-        );
+        // 2. Check if tag number is changed and already exists
+        if (!existingAnimal.getTagNumber().equals(request.getTagNumber())
+                && dairyAnimalRepository.existsByTagNumber(request.getTagNumber())) {
 
-        existingAnimal.setName(
-                animal.getName()
-        );
+            throw new DuplicateTagException(
+                    "Animal with tag number "
+                            + request.getTagNumber()
+                            + " already exists"
+            );
+        }
 
-        existingAnimal.setAnimalType(
-                animal.getAnimalType()
-        );
+        // 3. Find breed
+        Breed breed = breedRepository.findById(request.getBreedId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Breed not found with id: "
+                                        + request.getBreedId()
+                        )
+                );
 
-        existingAnimal.setBreed(
-                animal.getBreed()
-        );
+        // 4. Find farmer
+        Farmer farmer = farmerRepository.findById(request.getFarmerId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Farmer not found with id: "
+                                        + request.getFarmerId()
+                        )
+                );
 
-        existingAnimal.setDateOfBirth(
-                animal.getDateOfBirth()
-        );
+        // 5. Update animal details
+        existingAnimal.setTagNumber(request.getTagNumber());
+        existingAnimal.setName(request.getName());
+        existingAnimal.setAnimalType(request.getAnimalType());
+        existingAnimal.setBreed(breed);
+        existingAnimal.setDateOfBirth(request.getDateOfBirth());
+        existingAnimal.setWeight(request.getWeight());
+        existingAnimal.setColor(request.getColor());
+        existingAnimal.setHealthStatus(request.getHealthStatus());
+        existingAnimal.setFarmer(farmer);
 
-        existingAnimal.setWeight(
-                animal.getWeight()
-        );
-
-        existingAnimal.setColor(
-                animal.getColor()
-        );
-
-        existingAnimal.setHealthStatus(
-                animal.getHealthStatus()
-        );
-
-        existingAnimal.setFarmer(
-                animal.getFarmer()
-        );
-
-        return dairyAnimalRepository.save(
-                existingAnimal
-        );
+        // 6. Save updated animal
+        return dairyAnimalRepository.save(existingAnimal);
     }
 
     @Override
