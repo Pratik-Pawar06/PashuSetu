@@ -29,7 +29,7 @@ public class User {
     private Role role;
 
     @Column(nullable = false)
-    private boolean active;
+    private Boolean active;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -40,7 +40,7 @@ public class User {
 
     // Parameterized constructor
     public User(String name, String email, String password,
-                String phone, Role role, boolean active,
+                String phone, Role role, Boolean active,
                 LocalDateTime createdAt) {
 
         this.name = name;
@@ -98,11 +98,11 @@ public class User {
         this.role = role;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 

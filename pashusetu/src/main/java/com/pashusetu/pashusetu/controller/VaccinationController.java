@@ -54,6 +54,22 @@ public class VaccinationController {
         );
     }
 
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<Vaccination>> getUpcomingVaccinations() {
+
+        return ResponseEntity.ok(
+                vaccinationService.getUpcomingVaccinations()
+        );
+    }
+
+    @GetMapping("/overdue")
+    public ResponseEntity<List<Vaccination>> getOverdueVaccinations() {
+
+        return ResponseEntity.ok(
+                vaccinationService.getOverdueVaccinations()
+        );
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Vaccination> updateVaccination(
             @PathVariable Long id,

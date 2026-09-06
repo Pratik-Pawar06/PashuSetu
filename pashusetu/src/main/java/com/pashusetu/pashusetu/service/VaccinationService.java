@@ -14,6 +14,10 @@ public interface VaccinationService {
 
     List<Vaccination> getVaccinationsByAnimalId(Long animalId);
 
+    List<Vaccination> getUpcomingVaccinations();
+
+    List<Vaccination> getOverdueVaccinations();
+
     Vaccination updateVaccination(Long id, Vaccination vaccination);
 
     void deleteVaccination(Long id);

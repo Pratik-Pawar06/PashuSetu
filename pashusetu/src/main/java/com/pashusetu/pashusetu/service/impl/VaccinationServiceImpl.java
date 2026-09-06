@@ -1,5 +1,8 @@
 package com.pashusetu.pashusetu.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import com.pashusetu.pashusetu.repository.NotificationRepository;
 import com.pashusetu.pashusetu.entity.DairyAnimal;
 import com.pashusetu.pashusetu.entity.Vaccination;
 import com.pashusetu.pashusetu.repository.DairyAnimalRepository;
@@ -14,13 +17,16 @@ public class VaccinationServiceImpl implements VaccinationService {
 
     private final VaccinationRepository vaccinationRepository;
     private final DairyAnimalRepository dairyAnimalRepository;
+    private final NotificationRepository notificationRepository;
 
     public VaccinationServiceImpl(
             VaccinationRepository vaccinationRepository,
-            DairyAnimalRepository dairyAnimalRepository) {
+            DairyAnimalRepository dairyAnimalRepository,
+            NotificationRepository notificationRepository) {
 
         this.vaccinationRepository = vaccinationRepository;
         this.dairyAnimalRepository = dairyAnimalRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     @Override
@@ -68,6 +74,40 @@ public class VaccinationServiceImpl implements VaccinationService {
                 );
 
         return vaccinationRepository.findByAnimalId(animalId);
+    }
+
+    @Override
+    public List<Vaccination> getUpcomingVaccinations() {
+
+        LocalDate today = LocalDate.now();
+        LocalDate nextSevenDays = today.plusDays(7);
+
+        List<Vaccination> vaccinations =
+                vaccinationRepository.findByNextDueDateBetween(
+                        today,
+                        nextSevenDays
+                );
+
+        for (Vaccination vaccination : vaccinations) {
+            createVaccinationNotification(vaccination, "DUE");
+        }
+
+        return vaccinations;
+    }
+
+    @Override
+    public List<Vaccination> getOverdueVaccinations() {
+
+        LocalDate today = LocalDate.now();
+
+        List<Vaccination> vaccinations =
+                vaccinationRepository.findByNextDueDateBefore(today);
+
+        for (Vaccination vaccination : vaccinations) {
+            createVaccinationNotification(vaccination, "OVERDUE");
+        }
+
+        return vaccinations;
     }
 
     @Override
@@ -119,5 +159,40 @@ public class VaccinationServiceImpl implements VaccinationService {
                 getVaccinationById(id);
 
         vaccinationRepository.delete(vaccination);
+    }
+    private void createVaccinationNotification(
+            Vaccination vaccination,
+            String status) {
+
+        DairyAnimal animal = vaccination.getAnimal();
+
+        // Get the farmer's user directly
+        com.pashusetu.pashusetu.entity.User user =
+                animal.getFarmer().getUser();
+
+        String message;
+
+        if (status.equals("DUE")) {
+            message = "Vaccination for " + animal.getName()
+                    + " is due on "
+                    + vaccination.getNextDueDate() + ".";
+        } else {
+            message = "Vaccination for " + animal.getName()
+                    + " was due on "
+                    + vaccination.getNextDueDate()
+                    + " and is overdue.";
+        }
+
+        com.pashusetu.pashusetu.entity.Notification notification =
+                new com.pashusetu.pashusetu.entity.Notification();
+
+        notification.setMessage(message);
+        notification.setType("VACCINATION_" + status);
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setUser(user);
+
+        if (!notificationRepository.existsByUserIdAndMessage(user.getId(), message)) {
+            notificationRepository.save(notification);
+        }
     }
 }
