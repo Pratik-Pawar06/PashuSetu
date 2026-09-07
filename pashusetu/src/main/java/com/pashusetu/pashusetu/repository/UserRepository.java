@@ -1,0 +1,7 @@
+package com.pashusetu.pashusetu.repository;
+
+import com.pashusetu.pashusetu.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+}
