@@ -1,5 +1,7 @@
 package com.pashusetu.pashusetu.service.impl;
 
+import com.pashusetu.pashusetu.entity.VeterinarianType;
+import com.pashusetu.pashusetu.entity.VerificationStatus;
 import com.pashusetu.pashusetu.entity.District;
 import com.pashusetu.pashusetu.entity.Taluka;
 import com.pashusetu.pashusetu.entity.User;
@@ -33,35 +35,36 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         this.talukaRepository = talukaRepository;
     }
 
+
     @Override
     public Veterinarian addVeterinarian(Veterinarian veterinarian) {
 
-        User user = userRepository
-                .findById(veterinarian.getUser().getId())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found with id: "
-                                        + veterinarian.getUser().getId()
-                        )
-                );
+        User user = userRepository.findById(
+                veterinarian.getUser().getId()
+        ).orElseThrow(() ->
+                new RuntimeException(
+                        "User not found with id: "
+                                + veterinarian.getUser().getId()
+                )
+        );
 
-        District district = districtRepository
-                .findById(veterinarian.getDistrict().getId())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "District not found with id: "
-                                        + veterinarian.getDistrict().getId()
-                        )
-                );
+        District district = districtRepository.findById(
+                veterinarian.getDistrict().getId()
+        ).orElseThrow(() ->
+                new RuntimeException(
+                        "District not found with id: "
+                                + veterinarian.getDistrict().getId()
+                )
+        );
 
-        Taluka taluka = talukaRepository
-                .findById(veterinarian.getTaluka().getId())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Taluka not found with id: "
-                                        + veterinarian.getTaluka().getId()
-                        )
-                );
+        Taluka taluka = talukaRepository.findById(
+                veterinarian.getTaluka().getId()
+        ).orElseThrow(() ->
+                new RuntimeException(
+                        "Taluka not found with id: "
+                                + veterinarian.getTaluka().getId()
+                )
+        );
 
         veterinarian.setUser(user);
         veterinarian.setDistrict(district);
@@ -70,18 +73,89 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         return veterinarianRepository.save(veterinarian);
     }
 
+
     @Override
     public List<Veterinarian> getAllVeterinarians() {
         return veterinarianRepository.findAll();
     }
 
+
     @Override
     public Veterinarian getVeterinarianById(Long id) {
+
         return veterinarianRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Veterinarian not found with id: " + id
                         )
+                );
+    }
+
+
+    @Override
+    public List<Veterinarian> getApprovedVeterinarians() {
+
+        return veterinarianRepository.findByVerificationStatus(
+                VerificationStatus.APPROVED
+        );
+    }
+
+
+    @Override
+    public List<Veterinarian> getApprovedVeterinariansByTaluka(
+            Long talukaId) {
+
+        talukaRepository.findById(talukaId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Taluka not found with id: " + talukaId
+                        )
+                );
+
+        return veterinarianRepository
+                .findByTalukaIdAndVerificationStatus(
+                        talukaId,
+                        VerificationStatus.APPROVED
+                );
+    }
+
+
+    @Override
+    public List<Veterinarian> getApprovedVeterinariansByTalukaAndType(
+            Long talukaId,
+            VeterinarianType veterinarianType) {
+
+        talukaRepository.findById(talukaId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Taluka not found with id: " + talukaId
+                        )
+                );
+
+        return veterinarianRepository
+                .findByTalukaIdAndVerificationStatusAndVeterinarianType(
+                        talukaId,
+                        VerificationStatus.APPROVED,
+                        veterinarianType
+                );
+    }
+
+
+    @Override
+    public List<Veterinarian> getAvailableApprovedVeterinariansByTaluka(
+            Long talukaId) {
+
+        talukaRepository.findById(talukaId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Taluka not found with id: " + talukaId
+                        )
+                );
+
+        return veterinarianRepository
+                .findByTalukaIdAndVerificationStatusAndAvailableTrue(
+                        talukaId,
+                        VerificationStatus.APPROVED
                 );
     }
 
@@ -99,6 +173,7 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                 );
     }
 
+
     @Override
     public Veterinarian getVeterinarianByUserId(Long userId) {
 
@@ -112,6 +187,7 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                 );
     }
 
+
     @Override
     public List<Veterinarian> getVeterinariansByDistrictId(
             Long districtId) {
@@ -124,8 +200,10 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                         )
                 );
 
-        return veterinarianRepository.findByDistrictId(districtId);
+        return veterinarianRepository
+                .findByDistrictId(districtId);
     }
+
 
     @Override
     public List<Veterinarian> getVeterinariansByTalukaId(
@@ -139,12 +217,41 @@ public class VeterinarianServiceImpl implements VeterinarianService {
                         )
                 );
 
-        return veterinarianRepository.findByTalukaId(talukaId);
+        return veterinarianRepository
+                .findByTalukaId(talukaId);
     }
+
 
     @Override
     public List<Veterinarian> getAvailableVeterinarians() {
+
         return veterinarianRepository.findByAvailableTrue();
+    }
+
+
+    @Override
+    public void approveVeterinarian(Long id) {
+
+        Veterinarian veterinarian = getVeterinarianById(id);
+
+        veterinarian.setVerificationStatus(
+                VerificationStatus.APPROVED
+        );
+
+        veterinarianRepository.save(veterinarian);
+    }
+
+
+    @Override
+    public void rejectVeterinarian(Long id) {
+
+        Veterinarian veterinarian = getVeterinarianById(id);
+
+        veterinarian.setVerificationStatus(
+                VerificationStatus.REJECTED
+        );
+
+        veterinarianRepository.save(veterinarian);
     }
 
     @Override
@@ -155,51 +262,70 @@ public class VeterinarianServiceImpl implements VeterinarianService {
         Veterinarian existingVeterinarian =
                 getVeterinarianById(id);
 
-        User user = userRepository
-                .findById(veterinarian.getUser().getId())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found with id: "
-                                        + veterinarian.getUser().getId()
-                        )
-                );
+        User user = userRepository.findById(
+                veterinarian.getUser().getId()
+        ).orElseThrow(() ->
+                new RuntimeException(
+                        "User not found with id: "
+                                + veterinarian.getUser().getId()
+                )
+        );
 
-        District district = districtRepository
-                .findById(veterinarian.getDistrict().getId())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "District not found with id: "
-                                        + veterinarian.getDistrict().getId()
-                        )
-                );
+        District district = districtRepository.findById(
+                veterinarian.getDistrict().getId()
+        ).orElseThrow(() ->
+                new RuntimeException(
+                        "District not found with id: "
+                                + veterinarian.getDistrict().getId()
+                )
+        );
 
-        Taluka taluka = talukaRepository
-                .findById(veterinarian.getTaluka().getId())
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Taluka not found with id: "
-                                        + veterinarian.getTaluka().getId()
-                        )
-                );
+        Taluka taluka = talukaRepository.findById(
+                veterinarian.getTaluka().getId()
+        ).orElseThrow(() ->
+                new RuntimeException(
+                        "Taluka not found with id: "
+                                + veterinarian.getTaluka().getId()
+                )
+        );
+
 
         existingVeterinarian.setUser(user);
         existingVeterinarian.setDistrict(district);
         existingVeterinarian.setTaluka(taluka);
+
         existingVeterinarian.setQualification(
                 veterinarian.getQualification()
         );
+
         existingVeterinarian.setLicenseNumber(
                 veterinarian.getLicenseNumber()
         );
+
         existingVeterinarian.setSpecialization(
                 veterinarian.getSpecialization()
         );
+
+        existingVeterinarian.setVeterinarianType(
+                veterinarian.getVeterinarianType()
+        );
+
+        existingVeterinarian.setVerificationStatus(
+                veterinarian.getVerificationStatus()
+        );
+
+        existingVeterinarian.setVisitingFee(
+                veterinarian.getVisitingFee()
+        );
+
         existingVeterinarian.setAvailable(
                 veterinarian.isAvailable()
         );
 
+
         return veterinarianRepository.save(existingVeterinarian);
     }
+
 
     @Override
     public void deleteVeterinarian(Long id) {

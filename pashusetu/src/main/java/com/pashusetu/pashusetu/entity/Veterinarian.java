@@ -30,16 +30,37 @@ public class Veterinarian {
 
     private String specialization;
 
+    // Government or Private
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private boolean available;
+    private VeterinarianType veterinarianType;
+
+    // Pending, Approved or Rejected
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VerificationStatus verificationStatus;
+
+    // Fee charged by veterinarian for home visit
+    private Double visitingFee;
+
+    @Column(nullable = false)
+    private Boolean available;
+
 
     public Veterinarian() {
     }
 
-    public Veterinarian(User user, District district,
-                        Taluka taluka, String qualification,
-                        String licenseNumber, String specialization,
-                        boolean available) {
+
+    public Veterinarian(User user,
+                        District district,
+                        Taluka taluka,
+                        String qualification,
+                        String licenseNumber,
+                        String specialization,
+                        VeterinarianType veterinarianType,
+                        VerificationStatus verificationStatus,
+                        Double visitingFee,
+                        Boolean available) {
 
         this.user = user;
         this.district = district;
@@ -47,12 +68,17 @@ public class Veterinarian {
         this.qualification = qualification;
         this.licenseNumber = licenseNumber;
         this.specialization = specialization;
+        this.veterinarianType = veterinarianType;
+        this.verificationStatus = verificationStatus;
+        this.visitingFee = visitingFee;
         this.available = available;
     }
+
 
     public Long getId() {
         return id;
     }
+
 
     public User getUser() {
         return user;
@@ -62,6 +88,7 @@ public class Veterinarian {
         this.user = user;
     }
 
+
     public District getDistrict() {
         return district;
     }
@@ -69,6 +96,7 @@ public class Veterinarian {
     public void setDistrict(District district) {
         this.district = district;
     }
+
 
     public Taluka getTaluka() {
         return taluka;
@@ -78,6 +106,7 @@ public class Veterinarian {
         this.taluka = taluka;
     }
 
+
     public String getQualification() {
         return qualification;
     }
@@ -85,6 +114,7 @@ public class Veterinarian {
     public void setQualification(String qualification) {
         this.qualification = qualification;
     }
+
 
     public String getLicenseNumber() {
         return licenseNumber;
@@ -94,6 +124,7 @@ public class Veterinarian {
         this.licenseNumber = licenseNumber;
     }
 
+
     public String getSpecialization() {
         return specialization;
     }
@@ -102,11 +133,39 @@ public class Veterinarian {
         this.specialization = specialization;
     }
 
-    public boolean isAvailable() {
+
+    public VeterinarianType getVeterinarianType() {
+        return veterinarianType;
+    }
+
+    public void setVeterinarianType(VeterinarianType veterinarianType) {
+        this.veterinarianType = veterinarianType;
+    }
+
+
+    public VerificationStatus getVerificationStatus() {
+        return verificationStatus;
+    }
+
+    public void setVerificationStatus(VerificationStatus verificationStatus) {
+        this.verificationStatus = verificationStatus;
+    }
+
+
+    public Double getVisitingFee() {
+        return visitingFee;
+    }
+
+    public void setVisitingFee(Double visitingFee) {
+        this.visitingFee = visitingFee;
+    }
+
+
+    public Boolean isAvailable() {
         return available;
     }
 
-    public void setAvailable(boolean available) {
+    public void setAvailable(Boolean available) {
         this.available = available;
     }
 }

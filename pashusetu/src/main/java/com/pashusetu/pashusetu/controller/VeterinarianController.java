@@ -1,5 +1,6 @@
 package com.pashusetu.pashusetu.controller;
 
+import com.pashusetu.pashusetu.entity.VeterinarianType;
 import com.pashusetu.pashusetu.entity.Veterinarian;
 import com.pashusetu.pashusetu.service.VeterinarianService;
 import org.springframework.http.HttpStatus;
@@ -90,6 +91,75 @@ public class VeterinarianController {
         return ResponseEntity.ok(
                 veterinarianService.getAvailableVeterinarians()
         );
+    }
+
+    @GetMapping("/approved")
+    public ResponseEntity<List<Veterinarian>> getApprovedVeterinarians() {
+
+        return ResponseEntity.ok(
+                veterinarianService.getApprovedVeterinarians()
+        );
+    }
+
+
+    @GetMapping("/taluka/{talukaId}/approved")
+    public ResponseEntity<List<Veterinarian>>
+    getApprovedVeterinariansByTaluka(
+            @PathVariable Long talukaId) {
+
+        return ResponseEntity.ok(
+                veterinarianService
+                        .getApprovedVeterinariansByTaluka(talukaId)
+        );
+    }
+
+
+    @GetMapping("/taluka/{talukaId}/approved/type/{veterinarianType}")
+    public ResponseEntity<List<Veterinarian>>
+    getApprovedVeterinariansByTalukaAndType(
+            @PathVariable Long talukaId,
+            @PathVariable VeterinarianType veterinarianType) {
+
+        return ResponseEntity.ok(
+                veterinarianService
+                        .getApprovedVeterinariansByTalukaAndType(
+                                talukaId,
+                                veterinarianType
+                        )
+        );
+    }
+
+
+    @GetMapping("/taluka/{talukaId}/approved/available")
+    public ResponseEntity<List<Veterinarian>>
+    getAvailableApprovedVeterinariansByTaluka(
+            @PathVariable Long talukaId) {
+
+        return ResponseEntity.ok(
+                veterinarianService
+                        .getAvailableApprovedVeterinariansByTaluka(
+                                talukaId
+                        )
+        );
+    }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<Void> approveVeterinarian(
+            @PathVariable Long id) {
+
+        veterinarianService.approveVeterinarian(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<Void> rejectVeterinarian(
+            @PathVariable Long id) {
+
+        veterinarianService.rejectVeterinarian(id);
+
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
