@@ -24,6 +24,15 @@ public class NotificationServiceImpl implements NotificationService {
 
         notification.setCreatedAt(LocalDateTime.now());
 
+        boolean exists = notificationRepository.existsByUserIdAndMessage(
+                notification.getUser().getId(),
+                notification.getMessage()
+        );
+
+        if (exists) {
+            return null;
+        }
+
         return notificationRepository.save(notification);
     }
 

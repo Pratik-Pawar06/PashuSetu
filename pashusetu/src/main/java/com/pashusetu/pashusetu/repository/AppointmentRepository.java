@@ -12,6 +12,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findByFarmerId(Long farmerId);
 
+    List<Appointment> findByFarmerIdAndAppointmentDateBetween(
+            Long farmerId,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+    List<Appointment> findByFarmerIdAndStatus(
+            Long farmerId,
+            AppointmentStatus status
+    );
+
     List<Appointment> findByVeterinarianId(Long veterinarianId);
 
     List<Appointment> findByAnimalId(Long animalId);
@@ -21,6 +32,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByVeterinarianIdAndAppointmentDate(
             Long veterinarianId,
             LocalDate appointmentDate
+    );
+
+    List<Appointment> findByAppointmentDateBetween(
+            LocalDate startDate,
+            LocalDate endDate
     );
 
     boolean existsByVeterinarianIdAndAppointmentDateAndAppointmentTimeAndStatusIn(

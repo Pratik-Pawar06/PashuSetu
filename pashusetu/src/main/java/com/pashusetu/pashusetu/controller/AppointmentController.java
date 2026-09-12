@@ -20,8 +20,9 @@ public class AppointmentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Appointment createAppointment(
-            @RequestBody AppointmentRequest request) {
+    public Appointment createAppointment(@RequestBody AppointmentRequest request) {
+
+        System.out.println(">>> APPOINTMENT POST REACHED CONTROLLER");
 
         return appointmentService.createAppointment(request);
     }

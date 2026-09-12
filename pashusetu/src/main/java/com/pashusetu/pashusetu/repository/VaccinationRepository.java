@@ -19,4 +19,26 @@ public interface VaccinationRepository
     List<Vaccination> findByNextDueDateBefore(
             LocalDate date
     );
+
+    List<Vaccination> findByAnimalFarmerIdAndNextDueDateBetween(
+            Long farmerId,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+    List<Vaccination> findByAnimalFarmerIdAndNextDueDateBefore(
+            Long farmerId,
+            LocalDate date
+    );
+
+    List<Vaccination> findByAnimalFarmerVillageTalukaDistrictIdAndNextDueDateBetween(
+            Long districtId,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+    List<Vaccination> findByAnimalFarmerVillageTalukaDistrictIdAndNextDueDateBefore(
+            Long districtId,
+            LocalDate date
+    );
 }

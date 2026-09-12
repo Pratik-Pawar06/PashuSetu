@@ -2,7 +2,7 @@ package com.pashusetu.pashusetu.repository;
 
 import com.pashusetu.pashusetu.entity.BreedingRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
-
+import com.pashusetu.pashusetu.entity.BreedingStatus;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,7 +22,16 @@ public interface BreedingRecordRepository extends JpaRepository<BreedingRecord, 
             LocalDate endDate
     );
 
+    List<BreedingRecord> findByAnimalFarmerIdAndBreedingStatus(
+            Long farmerId,
+            BreedingStatus breedingStatus
+    );
+
     List<BreedingRecord> findByPregnancyCheckDateBefore(LocalDate date);
 
     List<BreedingRecord> findByExpectedCalvingDateBefore(LocalDate date);
+
+    List<BreedingRecord> findByAnimalFarmerVillageTalukaDistrictId(
+            Long districtId
+    );
 }
